@@ -15,6 +15,7 @@ public class BorderDamageSource {
     // Регистрируем ключ типа урона
     public static final RegistryKey<DamageType> BORDER_DEATH =
             RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(MOD_ID, "border_death"));
+    public static final String ID = "border";
 
 
     public static DamageSource create(ServerWorld world) {
