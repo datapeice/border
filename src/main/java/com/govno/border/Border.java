@@ -11,12 +11,15 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -150,10 +153,14 @@ public class Border implements ModInitializer {
             if (tickCounter % 80 == 0) {
                 player.damage(world, BorderDamageSource.create(world), Float.MAX_VALUE);
 
+//                world.playSound(null, player.getX(), player.getY(), player.getZ(),
+//                        SoundEvents.ENTITY_WARDEN_AGITATED, player.getSoundCategory(), 1.0f, 0.6f);
+//                world.playSound(null, player.getX(), player.getY(), player.getZ(),
+//                        SoundEvents.AMBIENT_CAVE, player.getSoundCategory(), 1.0f, 0.5f);
+
+                SoundEvent sound = SoundEvent.of(Identifier.of("slbase", "void"));
                 world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        SoundEvents.ENTITY_WARDEN_AGITATED, player.getSoundCategory(), 1.0f, 0.6f);
-                world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        SoundEvents.AMBIENT_CAVE, player.getSoundCategory(), 1.0f, 0.5f);
+                        sound, player.getSoundCategory(), 1.0f, 0.5f);
 
                 spawnFireParticles(world, pos, 20);
                 spawnAshParticles(world, pos, 70);
