@@ -11,13 +11,11 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -126,7 +124,7 @@ public class Border implements ModInitializer {
     }
 
     private void checkPlayerPosition(ServerPlayerEntity player) {
-        ServerWorld world = player.getWorld();
+        ServerWorld world = player.getEntityWorld();
         BlockPos pos = player.getBlockPos();
         int x = pos.getX();
         int z = pos.getZ();
@@ -214,7 +212,7 @@ public class Border implements ModInitializer {
     }
 
     private void breakNearbyPortalBlocks(ServerPlayerEntity player) {
-        ServerWorld world = player.getWorld();
+        ServerWorld world = player.getEntityWorld();
         BlockPos playerPos = player.getBlockPos();
         BlockPos nearestPortalPos = findNearestPortalBlock(world, playerPos);
 
@@ -294,16 +292,16 @@ public class Border implements ModInitializer {
     }
 
     private void onBorderDeath(ServerPlayerEntity player) {
-        String name = player.getGameProfile().getName();
+        String name = player.getGameProfile().name();
         int count = deathCounts.getOrDefault(name, 0) + 1;
         deathCounts.put(name, count);
 
         saveDeathCounts();
 
         if (count >= 5) {
-            MinecraftServer server = player.getServer();
+            MinecraftServer server = player.getEntityWorld().getServer();
             if (server != null) {
-                server.getCommandManager().executeWithPrefix(
+                server.getCommandManager().parseAndExecute(
                         server.getCommandSource(), "team join bad " + name
                 );
             }

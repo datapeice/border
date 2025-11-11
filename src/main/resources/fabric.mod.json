@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "border",
-  "version": "0.2.1",
+  "version": "0.2.2+1.21.10",
   "name": "border",
   "description": "",
   "authors": [
