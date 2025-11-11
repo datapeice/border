@@ -28,7 +28,7 @@ public class BorderDamageSource {
 
 
     public static void damage(Entity entity, float amount) {
-        if (entity.getWorld() instanceof ServerWorld serverWorld) {
+        if (entity.getEntityWorld() instanceof ServerWorld serverWorld) {
             entity.damage(serverWorld, create(serverWorld), amount);
         }
     }
