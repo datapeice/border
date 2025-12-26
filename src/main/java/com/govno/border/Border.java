@@ -129,49 +129,51 @@ public class Border implements ModInitializer {
         int x = pos.getX();
         int z = pos.getZ();
 
-        boolean inside = isInsidePolygon(x, z);
+        boolean insidePhysical = isInsidePolygon(x, z);
         double distance = distanceToPolygonEdge(x, z);
 
-        if (inside) return;
+        if (!insidePhysical) {
+            if (distance <= 50) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 30, 0, false, false));
+            } else if (distance <= 100) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 220, 0, false, false));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 220, 1, false, false));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 220, 1, false, false));
 
-        if (distance <= 50) {
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 30, 0, false, false));
-        } else if (distance <= 100) {
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 220, 0, false, false));
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 220, 1, false, false));
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 220, 1, false, false));
+                if (tickCounter % 40 == 0) {
+                    player.damage(world, BorderDamageSource.create(world), 8.0f);
+                    spawnFireParticles(world, pos, 10);
+                }
+            } else {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 999999, 0, false, false));
 
-            if (tickCounter % 40 == 0) {
-                player.damage(world, BorderDamageSource.create(world), 8.0f);
-                spawnFireParticles(world, pos, 10);
+                if (tickCounter % 80 == 0) {
+                    player.damage(world, BorderDamageSource.create(world), Float.MAX_VALUE);
+
+                    SoundEvent sound = SoundEvent.of(Identifier.of("slbase", "void"));
+                    world.playSound(null, player.getX(), player.getY(), player.getZ(),
+                            sound, player.getSoundCategory(), 1.0f, 0.5f);
+
+                    spawnFireParticles(world, pos, 20);
+                    spawnAshParticles(world, pos, 70);
+                }
             }
-        } else {
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 999999, 0, false, false));
 
-            if (tickCounter % 80 == 0) {
-                player.damage(world, BorderDamageSource.create(world), Float.MAX_VALUE);
-
-//                world.playSound(null, player.getX(), player.getY(), player.getZ(),
-//                        SoundEvents.ENTITY_WARDEN_AGITATED, player.getSoundCategory(), 1.0f, 0.6f);
-//                world.playSound(null, player.getX(), player.getY(), player.getZ(),
-//                        SoundEvents.AMBIENT_CAVE, player.getSoundCategory(), 1.0f, 0.5f);
-
-                SoundEvent sound = SoundEvent.of(Identifier.of("slbase", "void"));
-                world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        sound, player.getSoundCategory(), 1.0f, 0.5f);
-
-                spawnFireParticles(world, pos, 20);
-                spawnAshParticles(world, pos, 70);
+            if (player.hasVehicle() && distance <= 100 && player.getControllingVehicle() instanceof BoatEntity vehicle) {
+                vehicle.updatePosition(pos.getX(), pos.getY() - 1, pos.getZ());
+                player.dismountVehicle();
             }
         }
 
         if (world.getRegistryKey() == World.NETHER) {
-            breakNearbyPortalBlocks(player);
-        }
+            int overworldX = x * 8;
+            int overworldZ = z * 8;
 
-        if (player.hasVehicle() && distance <= 100 && player.getControllingVehicle() instanceof BoatEntity vehicle) {
-            vehicle.updatePosition(pos.getX(), pos.getY() - 1, pos.getZ());
-            player.dismountVehicle();
+            boolean exitPointInside = isInsidePolygon(overworldX, overworldZ);
+
+            if (!exitPointInside) {
+                breakNearbyPortalBlocks(player);
+            }
         }
     }
 
