@@ -129,10 +129,14 @@ public class Border implements ModInitializer {
         int x = pos.getX();
         int z = pos.getZ();
 
-        boolean insidePhysical = isInsidePolygon(x, z);
+        if (world.getRegistryKey() == World.NETHER) {
+            x *= 8;
+            z *= 8;
+        }
+
         double distance = distanceToPolygonEdge(x, z);
 
-        if (!insidePhysical) {
+        if (!isInsidePolygon(x, z)) {
             if (distance <= 50) {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 30, 0, false, false));
             } else if (distance <= 100) {
@@ -148,7 +152,7 @@ public class Border implements ModInitializer {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 999999, 0, false, false));
 
                 if (tickCounter % 80 == 0) {
-                    player.damage(world, BorderDamageSource.create(world), Float.MAX_VALUE);
+                    player.damage(world, BorderDamageSource.create(world), 1000.0f);
 
                     SoundEvent sound = SoundEvent.of(Identifier.of("slbase", "void"));
                     world.playSound(null, player.getX(), player.getY(), player.getZ(),
@@ -165,13 +169,11 @@ public class Border implements ModInitializer {
             }
         }
 
-        if (world.getRegistryKey() == World.NETHER) {
+        if (tickCounter % 20 == Math.abs(player.getUuid().hashCode() % 20) && world.getRegistryKey() == World.NETHER) {
             int overworldX = x * 8;
             int overworldZ = z * 8;
 
-            boolean exitPointInside = isInsidePolygon(overworldX, overworldZ);
-
-            if (!exitPointInside) {
+            if (!isInsidePolygon(overworldX, overworldZ)) {
                 breakNearbyPortalBlocks(player);
             }
         }
@@ -242,13 +244,13 @@ public class Border implements ModInitializer {
 
     private BlockPos findNearestPortalBlock(ServerWorld world, BlockPos playerPos) {
         BlockPos nearestPortalPos = null;
-        double nearestDistance = 16 * 16;
+        double nearestDistance = 64.0;
 
-        for (int x = -10; x <= 10; x++) {
-            for (int y = -11; y <= 10; y++) {
-                for (int z = -10; z <= 10; z++) {
+        for (int x = -5; x <= 5; x++) {
+            for (int y = -5; y <= 5; y++) {
+                for (int z = -5; z <= 5; z++) {
                     BlockPos pos = playerPos.add(x, y, z);
-                    if (world.getBlockState(pos).getBlock() instanceof NetherPortalBlock) {
+                    if (world.getBlockState(pos).isOf(Blocks.NETHER_PORTAL)) {
                         double distance = playerPos.getSquaredDistance(pos);
                         if (distance < nearestDistance) {
                             nearestDistance = distance;

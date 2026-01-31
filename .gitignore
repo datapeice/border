@@ -1,0 +1,35 @@
+# --- Gradle & Build ---
+.gradle/
+build/
+bin/
+
+# --- IDE (IntelliJ IDEA) ---
+.idea/
+*.iml
+*.iws
+.idea_modules/
+out/
+
+# --- Minecraft Run Data ---
+# Игнорируем всё, что создает игра при запуске (миры, логи, конфиги)
+run/
+run_test/
+run_server/
+logs/
+screenshots/
+resourcepacks/
+saves/
+crash-reports/
+world/
+usercache.json
+usernamecache.json
+*.log
+*.lck
+
+# --- Mod Specific Data ---
+# Игнорируем файл со счетчиком смертей, так как это локальные данные
+config/border_deaths.json
+
+# --- OS & System ---
+.DS_Store
+Thumbs.db
