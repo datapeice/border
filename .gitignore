@@ -1,5 +1,5 @@
 # --- Gradle & Build ---
-.gradle/
+.gradle/*
 build/
 bin/
 

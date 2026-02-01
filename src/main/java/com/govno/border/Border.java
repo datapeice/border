@@ -129,11 +129,6 @@ public class Border implements ModInitializer {
         int x = pos.getX();
         int z = pos.getZ();
 
-        if (world.getRegistryKey() == World.NETHER) {
-            x *= 8;
-            z *= 8;
-        }
-
         double distance = distanceToPolygonEdge(x, z);
 
         if (!isInsidePolygon(x, z)) {
